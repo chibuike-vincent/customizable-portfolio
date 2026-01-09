@@ -1,0 +1,85 @@
+
+<section class="page-header">
+    <div class="container">
+        <h1 class="page-title">Goodwill Messages</h1>
+        <p class="page-subtitle">Messages from the community</p>
+    </div>
+</section>
+
+<section class="messages-section">
+    <div class="container">
+        <div class="messages-header">
+            <p class="messages-info">All messages displayed are verified for authenticity</p>
+            <button class="btn btn-primary" id="showMessageForm">Share Your Message</button>
+        </div>
+
+        <div class="message-form-container" id="messageFormContainer" style="display: none;">
+            <form action="/goodwill-messages" method="POST" enctype="multipart/form-data" class="message-form">
+                <h3>Share Your Goodwill Message</h3>
+                <div class="form-group">
+                    <label for="name">Your Name *</label>
+                    <input type="text" id="name" name="name" required>
+                </div>
+                <div class="form-group">
+                    <label for="email">Email *</label>
+                    <input type="email" id="email" name="email" required>
+                </div>
+                <div class="form-group">
+                    <label for="message">Your Message *</label>
+                    <textarea id="message" name="message" rows="5" required></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="image">Your Photo (Optional)</label>
+                    <input type="file" id="image" name="image" accept="image/*">
+                </div>
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-primary">Submit Message</button>
+                    <button type="button" class="btn btn-secondary" id="cancelForm">Cancel</button>
+                </div>
+            </form>
+        </div>
+
+        <% if (messages && messages.length > 0) { %>
+        <div class="messages-grid">
+            <% messages.forEach((message, index) => { %>
+            <div class="message-card-large fade-in" style="animation-delay: <%= index * 0.1 %>s">
+                <div class="message-header">
+                    <div class="message-avatar-large">
+                        <img src="<%= message.image || '/images/dummy-message.jpg' %>" alt="<%= message.name %>">
+                    </div>
+                    <div class="message-info">
+                        <h4><%= message.name %></h4>
+                        <span class="verified-badge-large">
+                            <i class="fas fa-check-circle"></i> Verified
+                        </span>
+                        <span class="message-date">
+                            <%= new Date(message.createdAt).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }) %>
+                        </span>
+                    </div>
+                </div>
+                <div class="message-text">
+                    <p>"<%= message.message %>"</p>
+                </div>
+            </div>
+            <% }); %>
+        </div>
+        <% } else { %>
+        <div class="empty-state">
+            <i class="fas fa-envelope"></i>
+            <p>No verified messages to display yet.</p>
+        </div>
+        <% } %>
+    </div>
+</section>
+
+<script>
+document.getElementById('showMessageForm')?.addEventListener('click', () => {
+    document.getElementById('messageFormContainer').style.display = 'block';
+    document.getElementById('messageFormContainer').scrollIntoView({ behavior: 'smooth' });
+});
+
+document.getElementById('cancelForm')?.addEventListener('click', () => {
+    document.getElementById('messageFormContainer').style.display = 'none';
+});
+</script>
+

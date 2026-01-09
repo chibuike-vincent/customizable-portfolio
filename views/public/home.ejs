@@ -1,0 +1,107 @@
+
+<section class="hero-section">
+    <div class="hero-overlay"></div>
+    <div class="hero-content">
+        <div class="container">
+            <h1 class="hero-title fade-in-up"><%= profile.name || 'Welcome' %></h1>
+            <p class="hero-subtitle fade-in-up"><%= profile.title || 'Politician' %></p>
+            <p class="hero-description fade-in-up"><%= profile.bio ? profile.bio.substring(0, 150) + '...' : 'Dedicated to serving the community' %></p>
+            <a href="/profile" class="btn btn-primary fade-in-up">Learn More</a>
+        </div>
+    </div>
+    <div class="hero-image">
+        <img src="<%= profile.image || '/images/dummy-profile.jpg' %>" alt="<%= profile.name %>">
+    </div>
+</section>
+
+<section class="story-section">
+    <div class="container">
+        <div class="section-header">
+            <h2 class="section-title">Our Story</h2>
+            <p class="section-subtitle">A journey of service and dedication</p>
+        </div>
+        <div class="story-content">
+            <div class="story-text">
+                <p><%= profile.bio || 'This is where the story of dedication, service, and commitment to the community unfolds. Every decision, every action, and every achievement is driven by a passion to make a positive impact.' %></p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<% if (achievements && achievements.length > 0) { %>
+<section class="achievements-preview">
+    <div class="container">
+        <div class="section-header">
+            <h2 class="section-title">Recent Achievements</h2>
+            <a href="/achievements" class="view-all">View All <i class="fas fa-arrow-right"></i></a>
+        </div>
+        <div class="achievements-grid">
+            <% achievements.forEach((achievement, index) => { %>
+            <div class="achievement-card fade-in" style="animation-delay: <%= index * 0.1 %>s">
+                <div class="achievement-image">
+                    <img src="<%= achievement.image || '/images/dummy-achievement.jpg' %>" alt="<%= achievement.title %>">
+                </div>
+                <div class="achievement-content">
+                    <span class="achievement-date"><%= new Date(achievement.date).toLocaleDateString() %></span>
+                    <h3><%= achievement.title %></h3>
+                    <p><%= achievement.description.substring(0, 100) %>...</p>
+                </div>
+            </div>
+            <% }); %>
+        </div>
+    </div>
+</section>
+<% } %>
+
+<% if (philanthropic && philanthropic.length > 0) { %>
+<section class="philanthropic-preview">
+    <div class="container">
+        <div class="section-header">
+            <h2 class="section-title">Philanthropic Activities</h2>
+            <a href="/philanthropic" class="view-all">View All <i class="fas fa-arrow-right"></i></a>
+        </div>
+        <div class="philanthropic-grid">
+            <% philanthropic.forEach((activity, index) => { %>
+            <div class="philanthropic-card fade-in" style="animation-delay: <%= index * 0.1 %>s">
+                <div class="philanthropic-image">
+                    <img src="<%= activity.images && activity.images.length > 0 ? activity.images[0] : '/images/dummy-philanthropic.jpg' %>" alt="<%= activity.title %>">
+                </div>
+                <div class="philanthropic-content">
+                    <h3><%= activity.title %></h3>
+                    <p><%= activity.description.substring(0, 120) %>...</p>
+                    <span class="impact-badge"><i class="fas fa-heart"></i> Impact: <%= activity.impact %></span>
+                </div>
+            </div>
+            <% }); %>
+        </div>
+    </div>
+</section>
+<% } %>
+
+<% if (messages && messages.length > 0) { %>
+<section class="messages-preview">
+    <div class="container">
+        <div class="section-header">
+            <h2 class="section-title">Goodwill Messages</h2>
+            <a href="/goodwill-messages" class="view-all">View All <i class="fas fa-arrow-right"></i></a>
+        </div>
+        <div class="messages-grid">
+            <% messages.forEach((message, index) => { %>
+            <div class="message-card fade-in" style="animation-delay: <%= index * 0.1 %>s">
+                <div class="message-header">
+                    <div class="message-avatar">
+                        <img src="<%= message.image || '/images/dummy-message.jpg' %>" alt="<%= message.name %>">
+                    </div>
+                    <div class="message-info">
+                        <h4><%= message.name %></h4>
+                        <span class="verified-badge"><i class="fas fa-check-circle"></i> Verified</span>
+                    </div>
+                </div>
+                <p class="message-text">"<%= message.message.substring(0, 150) %>..."</p>
+            </div>
+            <% }); %>
+        </div>
+    </div>
+</section>
+<% } %>
+

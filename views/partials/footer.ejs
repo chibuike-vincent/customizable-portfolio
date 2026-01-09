@@ -1,0 +1,42 @@
+<footer class="main-footer">
+    <div class="container">
+        <div class="footer-content">
+            <div class="footer-section">
+                <h3>About</h3>
+                <p><%= settings && settings.siteDescription ? settings.siteDescription : 'Official political website' %></p>
+            </div>
+            <div class="footer-section">
+                <h3>Quick Links</h3>
+                <ul>
+                    <li><a href="/">Home</a></li>
+                    <li><a href="/profile">Profile</a></li>
+                    <li><a href="/achievements">Achievements</a></li>
+                    <li><a href="/philanthropic">Philanthropic</a></li>
+                </ul>
+            </div>
+            <% if (profile && profile.socialLinks) { %>
+            <div class="footer-section">
+                <h3>Connect</h3>
+                <div class="social-links">
+                    <% if (profile.socialLinks.facebook) { %>
+                    <a href="<%= profile.socialLinks.facebook %>" target="_blank"><i class="fab fa-facebook"></i></a>
+                    <% } %>
+                    <% if (profile.socialLinks.twitter) { %>
+                    <a href="<%= profile.socialLinks.twitter %>" target="_blank"><i class="fab fa-twitter"></i></a>
+                    <% } %>
+                    <% if (profile.socialLinks.instagram) { %>
+                    <a href="<%= profile.socialLinks.instagram %>" target="_blank"><i class="fab fa-instagram"></i></a>
+                    <% } %>
+                    <% if (profile.socialLinks.linkedin) { %>
+                    <a href="<%= profile.socialLinks.linkedin %>" target="_blank"><i class="fab fa-linkedin"></i></a>
+                    <% } %>
+                </div>
+            </div>
+            <% } %>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; <%= new Date().getFullYear() %> All rights reserved.</p>
+        </div>
+    </div>
+</footer>
+

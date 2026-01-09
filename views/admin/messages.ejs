@@ -1,0 +1,87 @@
+<% title = 'Goodwill Messages Management' %>
+
+<% if (typeof success !== 'undefined' && success) { %>
+<div class="alert alert-success" style="background: #d1fae5; color: #065f46; padding: 1rem; border-radius: 5px; margin-bottom: 1rem; border: 1px solid #6ee7b7;">
+    <i class="fas fa-check-circle"></i> <%= success %>
+</div>
+<% } %>
+
+<% if (typeof error !== 'undefined' && error) { %>
+<div class="alert alert-error" style="background: #fee2e2; color: #991b1b; padding: 1rem; border-radius: 5px; margin-bottom: 1rem; border: 1px solid #fecaca;">
+    <i class="fas fa-exclamation-circle"></i> <%= error %>
+</div>
+<% } %>
+
+<div class="messages-admin">
+    <div class="messages-stats">
+        <div class="stat-badge verified">
+            <i class="fas fa-check-circle"></i>
+            <%= messages.filter(m => m.verified).length %> Verified
+        </div>
+        <div class="stat-badge unverified">
+            <i class="fas fa-clock"></i>
+            <%= messages.filter(m => !m.verified).length %> Pending
+        </div>
+    </div>
+
+    <div class="messages-list">
+        <% if (messages && messages.length > 0) { %>
+            <% messages.forEach(message => { %>
+            <div class="message-admin-card <%= message.verified ? 'verified' : 'unverified' %>">
+                <div class="message-admin-header">
+                    <div class="message-admin-avatar">
+                        <img src="<%= message.image || '/images/dummy-message.jpg' %>" alt="<%= message.name %>">
+                    </div>
+                    <div class="message-admin-info">
+                        <h4><%= message.name %></h4>
+                        <p><%= message.email %></p>
+                        <span class="message-date">
+                            <%= new Date(message.createdAt).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }) %>
+                        </span>
+                    </div>
+                    <div class="message-status">
+                        <% if (message.verified) { %>
+                            <span class="badge verified-badge">
+                                <i class="fas fa-check-circle"></i> Verified
+                            </span>
+                        <% } else { %>
+                            <span class="badge unverified-badge">
+                                <i class="fas fa-clock"></i> Pending
+                            </span>
+                        <% } %>
+                    </div>
+                </div>
+                <div class="message-admin-text">
+                    <p>"<%= message.message %>"</p>
+                </div>
+                <div class="message-admin-actions">
+                    <% if (!message.verified) { %>
+                        <form action="/admin/messages/<%= message._id %>/verify" method="POST" style="display: inline;">
+                            <button type="submit" class="btn btn-success btn-sm">
+                                <i class="fas fa-check"></i> Verify
+                            </button>
+                        </form>
+                    <% } else { %>
+                        <form action="/admin/messages/<%= message._id %>/unverify" method="POST" style="display: inline;">
+                            <button type="submit" class="btn btn-warning btn-sm">
+                                <i class="fas fa-times"></i> Unverify
+                            </button>
+                        </form>
+                    <% } %>
+                    <form action="/admin/messages/<%= message._id %>/delete" method="POST" style="display: inline;" onsubmit="return confirm('Are you sure you want to delete this message?')">
+                        <button type="submit" class="btn btn-danger btn-sm">
+                            <i class="fas fa-trash"></i> Delete
+                        </button>
+                    </form>
+                </div>
+            </div>
+            <% }); %>
+        <% } else { %>
+            <div class="empty-state">
+                <i class="fas fa-envelope"></i>
+                <p>No messages found</p>
+            </div>
+        <% } %>
+    </div>
+</div>
+

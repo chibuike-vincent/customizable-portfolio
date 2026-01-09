@@ -1,0 +1,56 @@
+<% title = 'Profile Management' %>
+
+<div class="admin-form-container">
+    <form action="/admin/profile" method="POST" enctype="multipart/form-data" class="admin-form">
+        <div class="form-section">
+            <h3>Basic Information</h3>
+            <div class="form-group">
+                <label for="name">Full Name *</label>
+                <input type="text" id="name" name="name" value="<%= profile.name || '' %>" required>
+            </div>
+            <div class="form-group">
+                <label for="title">Title/Position *</label>
+                <input type="text" id="title" name="title" value="<%= profile.title || '' %>" required>
+            </div>
+            <div class="form-group">
+                <label for="bio">Biography *</label>
+                <textarea id="bio" name="bio" rows="8" required><%= profile.bio || '' %></textarea>
+            </div>
+            <div class="form-group">
+                <label for="image">Profile Image</label>
+                <% if (profile.image) { %>
+                <div class="current-image">
+                    <img src="<%= profile.image %>" alt="Current profile">
+                    <p>Current Image</p>
+                </div>
+                <% } %>
+                <input type="file" id="image" name="image" accept="image/*">
+            </div>
+        </div>
+
+        <div class="form-section">
+            <h3>Social Media Links</h3>
+            <div class="form-group">
+                <label for="facebook">Facebook URL</label>
+                <input type="url" id="facebook" name="facebook" value="<%= profile.socialLinks && profile.socialLinks.facebook ? profile.socialLinks.facebook : '' %>">
+            </div>
+            <div class="form-group">
+                <label for="twitter">Twitter URL</label>
+                <input type="url" id="twitter" name="twitter" value="<%= profile.socialLinks && profile.socialLinks.twitter ? profile.socialLinks.twitter : '' %>">
+            </div>
+            <div class="form-group">
+                <label for="instagram">Instagram URL</label>
+                <input type="url" id="instagram" name="instagram" value="<%= profile.socialLinks && profile.socialLinks.instagram ? profile.socialLinks.instagram : '' %>">
+            </div>
+            <div class="form-group">
+                <label for="linkedin">LinkedIn URL</label>
+                <input type="url" id="linkedin" name="linkedin" value="<%= profile.socialLinks && profile.socialLinks.linkedin ? profile.socialLinks.linkedin : '' %>">
+            </div>
+        </div>
+
+        <div class="form-actions">
+            <button type="submit" class="btn btn-primary">Save Changes</button>
+        </div>
+    </form>
+</div>
+

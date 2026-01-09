@@ -1,0 +1,42 @@
+
+<section class="profile-hero">
+    <div class="container">
+        <div class="profile-header">
+            <div class="profile-image-wrapper">
+                <img src="<%= profile.image || '/images/dummy-profile.jpg' %>" alt="<%= profile.name %>" class="profile-image">
+            </div>
+            <div class="profile-info">
+                <h1 class="profile-name"><%= profile.name || 'Name' %></h1>
+                <p class="profile-title"><%= profile.title || 'Title' %></p>
+                <% if (profile.socialLinks) { %>
+                <div class="profile-social">
+                    <% if (profile.socialLinks.facebook) { %>
+                    <a href="<%= profile.socialLinks.facebook %>" target="_blank"><i class="fab fa-facebook"></i></a>
+                    <% } %>
+                    <% if (profile.socialLinks.twitter) { %>
+                    <a href="<%= profile.socialLinks.twitter %>" target="_blank"><i class="fab fa-twitter"></i></a>
+                    <% } %>
+                    <% if (profile.socialLinks.instagram) { %>
+                    <a href="<%= profile.socialLinks.instagram %>" target="_blank"><i class="fab fa-instagram"></i></a>
+                    <% } %>
+                    <% if (profile.socialLinks.linkedin) { %>
+                    <a href="<%= profile.socialLinks.linkedin %>" target="_blank"><i class="fab fa-linkedin"></i></a>
+                    <% } %>
+                </div>
+                <% } %>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="profile-content">
+    <div class="container">
+        <div class="bio-section">
+            <h2>Biography</h2>
+            <div class="bio-text">
+                <p><%= profile.bio ? profile.bio.replace(/\n/g, '</p><p>') : 'Biography information will be displayed here.' %></p>
+            </div>
+        </div>
+    </div>
+</section>
+

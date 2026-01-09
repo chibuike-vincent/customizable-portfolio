@@ -1,0 +1,80 @@
+<% title = 'Dashboard' %>
+
+<div class="dashboard">
+    <div class="stats-grid">
+        <div class="stat-card">
+            <div class="stat-icon achievement">
+                <i class="fas fa-trophy"></i>
+            </div>
+            <div class="stat-info">
+                <h3><%= stats.achievements %></h3>
+                <p>Achievements</p>
+            </div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon philanthropic">
+                <i class="fas fa-heart"></i>
+            </div>
+            <div class="stat-info">
+                <h3><%= stats.philanthropic %></h3>
+                <p>Philanthropic Activities</p>
+            </div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon messages">
+                <i class="fas fa-envelope"></i>
+            </div>
+            <div class="stat-info">
+                <h3><%= stats.totalMessages %></h3>
+                <p>Total Messages</p>
+            </div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon verified">
+                <i class="fas fa-check-circle"></i>
+            </div>
+            <div class="stat-info">
+                <h3><%= stats.verifiedMessages %></h3>
+                <p>Verified Messages</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="dashboard-content">
+        <div class="dashboard-section">
+            <h2>Quick Actions</h2>
+            <div class="quick-actions">
+                <a href="/admin/profile" class="action-card">
+                    <i class="fas fa-user-edit"></i>
+                    <span>Edit Profile</span>
+                </a>
+                <a href="/admin/achievements" class="action-card">
+                    <i class="fas fa-plus-circle"></i>
+                    <span>Add Achievement</span>
+                </a>
+                <a href="/admin/philanthropic" class="action-card">
+                    <i class="fas fa-heart"></i>
+                    <span>Add Activity</span>
+                </a>
+                <a href="/admin/messages" class="action-card">
+                    <i class="fas fa-envelope-open"></i>
+                    <span>View Messages</span>
+                </a>
+            </div>
+        </div>
+
+        <% if (profile) { %>
+        <div class="dashboard-section">
+            <h2>Current Profile</h2>
+            <div class="profile-preview">
+                <img src="<%= profile.image || '/images/dummy-profile.jpg' %>" alt="Profile">
+                <div>
+                    <h3><%= profile.name %></h3>
+                    <p><%= profile.title %></p>
+                </div>
+            </div>
+        </div>
+        <% } %>
+    </div>
+</div>
+

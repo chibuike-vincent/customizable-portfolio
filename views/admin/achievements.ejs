@@ -1,0 +1,166 @@
+<% title = 'Achievements Management' %>
+
+<div class="admin-content-header">
+    <button class="btn btn-primary" onclick="showAddForm()">
+        <i class="fas fa-plus"></i> Add Achievement
+    </button>
+</div>
+
+<div class="add-form-container" id="addForm" style="display: none;">
+    <form action="/admin/achievements" method="POST" enctype="multipart/form-data" class="admin-form">
+        <h3>Add New Achievement</h3>
+        <div class="form-group">
+            <label for="title">Title *</label>
+            <input type="text" id="title" name="title" required>
+        </div>
+        <div class="form-group">
+            <label for="description">Description *</label>
+            <textarea id="description" name="description" rows="5" required></textarea>
+        </div>
+        <div class="form-row">
+            <div class="form-group">
+                <label for="date">Date *</label>
+                <input type="date" id="date" name="date" required>
+            </div>
+            <div class="form-group">
+                <label for="category">Category *</label>
+                <select id="category" name="category" required>
+                    <option value="Legislative">Legislative</option>
+                    <option value="Community">Community</option>
+                    <option value="Education">Education</option>
+                    <option value="Healthcare">Healthcare</option>
+                    <option value="Infrastructure">Infrastructure</option>
+                    <option value="Other">Other</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="order">Order</label>
+                <input type="number" id="order" name="order" value="0">
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="image">Image</label>
+            <input type="file" id="image" name="image" accept="image/*">
+        </div>
+        <div class="form-actions">
+            <button type="submit" class="btn btn-primary">Add Achievement</button>
+            <button type="button" class="btn btn-secondary" onclick="hideAddForm()">Cancel</button>
+        </div>
+    </form>
+</div>
+
+<div class="admin-table-container">
+    <table class="admin-table">
+        <thead>
+            <tr>
+                <th>Image</th>
+                <th>Title</th>
+                <th>Category</th>
+                <th>Date</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            <% if (achievements && achievements.length > 0) { %>
+                <% achievements.forEach(achievement => { %>
+                <tr>
+                    <td><img src="<%= achievement.image || '/images/dummy-achievement.jpg' %>" alt="<%= achievement.title %>" class="table-image"></td>
+                    <td><%= achievement.title %></td>
+                    <td><span class="badge"><%= achievement.category %></span></td>
+                    <td><%= new Date(achievement.date).toLocaleDateString() %></td>
+                    <td>
+                        <button class="btn-icon" onclick="editAchievement('<%= achievement._id %>')">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                        <form action="/admin/achievements/<%= achievement._id %>" method="POST" style="display: inline;" onsubmit="return confirm('Are you sure?')">
+                            <input type="hidden" name="_method" value="DELETE">
+                            <button type="submit" class="btn-icon danger">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </form>
+                    </td>
+                </tr>
+                <% }); %>
+            <% } else { %>
+                <tr>
+                    <td colspan="5" class="empty-table">No achievements found</td>
+                </tr>
+            <% } %>
+        </tbody>
+    </table>
+</div>
+
+<div class="edit-form-container" id="editForm" style="display: none;">
+    <form id="editAchievementForm" method="POST" enctype="multipart/form-data" class="admin-form">
+        <h3>Edit Achievement</h3>
+        <div class="form-group">
+            <label for="edit_title">Title *</label>
+            <input type="text" id="edit_title" name="title" required>
+        </div>
+        <div class="form-group">
+            <label for="edit_description">Description *</label>
+            <textarea id="edit_description" name="description" rows="5" required></textarea>
+        </div>
+        <div class="form-row">
+            <div class="form-group">
+                <label for="edit_date">Date *</label>
+                <input type="date" id="edit_date" name="date" required>
+            </div>
+            <div class="form-group">
+                <label for="edit_category">Category *</label>
+                <select id="edit_category" name="category" required>
+                    <option value="Legislative">Legislative</option>
+                    <option value="Community">Community</option>
+                    <option value="Education">Education</option>
+                    <option value="Healthcare">Healthcare</option>
+                    <option value="Infrastructure">Infrastructure</option>
+                    <option value="Other">Other</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="edit_order">Order</label>
+                <input type="number" id="edit_order" name="order" value="0">
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="edit_image">Image (leave empty to keep current)</label>
+            <input type="file" id="edit_image" name="image" accept="image/*">
+        </div>
+        <div class="form-actions">
+            <button type="submit" class="btn btn-primary">Update Achievement</button>
+            <button type="button" class="btn btn-secondary" onclick="hideEditForm()">Cancel</button>
+        </div>
+    </form>
+</div>
+
+<script>
+const achievements = <%- JSON.stringify(achievements) %>;
+
+function showAddForm() {
+    document.getElementById('addForm').style.display = 'block';
+    document.getElementById('addForm').scrollIntoView({ behavior: 'smooth' });
+}
+
+function hideAddForm() {
+    document.getElementById('addForm').style.display = 'none';
+}
+
+function editAchievement(id) {
+    const achievement = achievements.find(a => a._id === id);
+    if (!achievement) return;
+
+    document.getElementById('edit_title').value = achievement.title;
+    document.getElementById('edit_description').value = achievement.description;
+    document.getElementById('edit_date').value = new Date(achievement.date).toISOString().split('T')[0];
+    document.getElementById('edit_category').value = achievement.category;
+    document.getElementById('edit_order').value = achievement.order || 0;
+    document.getElementById('editAchievementForm').action = `/admin/achievements/${id}`;
+    document.getElementById('editForm').style.display = 'block';
+    document.getElementById('editForm').scrollIntoView({ behavior: 'smooth' });
+}
+
+function hideEditForm() {
+    document.getElementById('editForm').style.display = 'none';
+}
+</script>
+
