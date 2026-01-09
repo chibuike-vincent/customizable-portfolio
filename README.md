@@ -46,22 +46,23 @@ A stunning political website built with Node.js, Express, EJS, and MongoDB. Feat
    - `CLOUDINARY_CLOUD_NAME`: Your Cloudinary cloud name
    - `CLOUDINARY_API_KEY`: Your Cloudinary API key
    - `CLOUDINARY_API_SECRET`: Your Cloudinary API secret
+   - `ADMIN_PASSWORD`: (Optional) Default admin password (defaults to 'admin123')
    
    See `CLOUDINARY_SETUP.md` for detailed Cloudinary setup instructions.
 
 4. **Start MongoDB**
    Make sure MongoDB is running on your system.
 
-5. **Create Admin User**
-   You'll need to create an admin user manually in MongoDB or use a script:
-   ```javascript
-   // Run this in Node.js console or create a setup script
-   const Admin = require('./models/Admin');
-   const admin = new Admin({
-     username: 'admin',
-     password: 'your-password' // Will be hashed automatically
-   });
-   admin.save();
+5. **Admin User**
+   A default admin user is automatically created when the database connects:
+   - **Username**: `admin`
+   - **Password**: `admin123` (or the value set in `ADMIN_PASSWORD` env variable)
+   
+   ⚠️ **IMPORTANT**: Change the password after first login!
+   
+   If you need to create an admin manually, you can also run:
+   ```bash
+   node scripts/createAdmin.js
    ```
 
 6. **Run the application**

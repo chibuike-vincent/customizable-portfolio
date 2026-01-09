@@ -14,6 +14,7 @@ PORT=3000
 MONGODB_URI=mongodb://localhost:27017/ikenga_political
 SESSION_SECRET=your-super-secret-key-change-this
 NODE_ENV=development
+ADMIN_PASSWORD=admin123
 ```
 
 ### 3. Start MongoDB
@@ -29,17 +30,17 @@ sudo systemctl start mongod
 # Start MongoDB service from Services
 ```
 
-### 4. Create Admin User
-Run the setup script:
+### 4. Admin User (Automatic)
+A default admin user is **automatically created** when the database connects for the first time:
+- **Username**: `admin`
+- **Password**: `admin123` (or the value set in `ADMIN_PASSWORD` env variable)
+
+**⚠️ IMPORTANT: Change the password immediately after first login!**
+
+If you need to manually create an admin user, you can also run:
 ```bash
 node scripts/createAdmin.js
 ```
-
-This will create an admin user with:
-- Username: `admin`
-- Password: `admin123`
-
-**⚠️ IMPORTANT: Change the password immediately after first login!**
 
 ### 5. Add Dummy Images (Optional)
 Place placeholder images in `public/images/`:
