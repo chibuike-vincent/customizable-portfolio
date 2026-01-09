@@ -27,7 +27,15 @@ exports.postLogin = async (req, res) => {
 
     req.session.isAuthenticated = true;
     req.session.adminId = admin._id;
-    res.redirect('/admin/dashboard');
+    
+    // Save session before redirect (important for production)
+    req.session.save((err) => {
+      if (err) {
+        console.error('Session save error:', err);
+        return res.render('admin/login', { error: 'Session error. Please try again.' });
+      }
+      res.redirect('/admin/dashboard');
+    });
   } catch (error) {
     console.error(error);
     res.render('admin/login', { error: 'Server error. Please try again.' });

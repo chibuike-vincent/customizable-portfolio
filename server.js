@@ -12,6 +12,9 @@ const app = express();
 // Connect to MongoDB
 connectDB();
 
+// Trust proxy (important for production behind reverse proxy)
+app.set('trust proxy', 1);
+
 // Middleware
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -32,10 +35,16 @@ app.use(session({
     ttl: 14 * 24 * 60 * 60 // 14 days
   }),
   cookie: {
-    secure: process.env.NODE_ENV === 'production',
+    // Secure cookies in production (requires HTTPS)
+    // If behind reverse proxy with SSL termination, set secure: true
+    // If direct HTTPS, also set secure: true
+    // Set BEHIND_PROXY=false if not using a reverse proxy
+    secure: process.env.NODE_ENV === 'production' && process.env.BEHIND_PROXY !== 'false',
     httpOnly: true,
-    maxAge: 14 * 24 * 60 * 60 * 1000 // 14 days
-  }
+    maxAge: 14 * 24 * 60 * 60 * 1000, // 14 days
+    sameSite: 'lax' // 'lax' works for most cases, 'none' requires secure: true
+  },
+  name: 'ikenga.sid' // Custom session name
 }));
 
 // View engine setup
