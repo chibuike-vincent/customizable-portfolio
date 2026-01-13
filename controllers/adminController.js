@@ -4,6 +4,7 @@ const Achievement = require('../models/Achievement');
 const Philanthropic = require('../models/Philanthropic');
 const GoodwillMessage = require('../models/GoodwillMessage');
 const Settings = require('../models/Settings');
+const Comment = require('../models/Comment');
 const { deleteImage, deleteImages } = require('../config/cloudinary');
 
 // Dashboard
@@ -342,6 +343,106 @@ exports.updateSettings = async (req, res) => {
   } catch (error) {
     console.error(error);
     res.status(500).send('Server Error');
+  }
+};
+
+// Comments Management
+exports.getComments = async (req, res) => {
+  try {
+    const comments = await Comment.find()
+      .sort({ createdAt: -1 });
+    
+    // Populate parent items
+    const commentsWithParents = await Promise.all(
+      comments.map(async (comment) => {
+        let parentItem = null;
+        if (comment.parentType === 'Achievement') {
+          parentItem = await Achievement.findById(comment.parentId);
+        } else if (comment.parentType === 'Philanthropic') {
+          parentItem = await Philanthropic.findById(comment.parentId);
+        }
+        
+        return {
+          ...comment.toObject(),
+          parentItem: parentItem
+        };
+      })
+    );
+    
+    const stats = {
+      total: comments.length,
+      approved: comments.filter(c => c.approved).length,
+      pending: comments.filter(c => !c.approved).length
+    };
+
+    const success = req.query.success || null;
+    const error = req.query.error || null;
+
+    res.render('admin/comments', { 
+      layout: 'layouts/admin', 
+      comments: commentsWithParents,
+      stats,
+      success,
+      error
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).send('Server Error');
+  }
+};
+
+exports.approveComment = async (req, res) => {
+  try {
+    await Comment.findByIdAndUpdate(req.params.id, { approved: true });
+    res.redirect('/admin/comments?success=Comment approved');
+  } catch (error) {
+    console.error(error);
+    res.redirect('/admin/comments?error=Failed to approve comment');
+  }
+};
+
+exports.unapproveComment = async (req, res) => {
+  try {
+    await Comment.findByIdAndUpdate(req.params.id, { approved: false });
+    res.redirect('/admin/comments?success=Comment unapproved');
+  } catch (error) {
+    console.error(error);
+    res.redirect('/admin/comments?error=Failed to unapprove comment');
+  }
+};
+
+exports.deleteComment = async (req, res) => {
+  try {
+    const comment = await Comment.findById(req.params.id);
+    
+    if (!comment) {
+      return res.redirect('/admin/comments?error=Comment not found');
+    }
+
+    // Delete image if exists
+    if (comment.author.image && !comment.author.image.includes('dummy') && !comment.author.image.includes('/images/')) {
+      await deleteImage(comment.author.image);
+    }
+
+    // If it's a reply, remove it from parent's replies array
+    if (comment.parentComment) {
+      await Comment.findByIdAndUpdate(comment.parentComment, {
+        $pull: { replies: comment._id }
+      });
+    }
+
+    // Delete all replies first
+    if (comment.replies && comment.replies.length > 0) {
+      await Comment.deleteMany({ _id: { $in: comment.replies } });
+    }
+
+    // Delete the comment
+    await Comment.findByIdAndDelete(req.params.id);
+    
+    res.redirect('/admin/comments?success=Comment deleted');
+  } catch (error) {
+    console.error(error);
+    res.redirect('/admin/comments?error=Failed to delete comment');
   }
 };
 

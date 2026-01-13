@@ -1,5 +1,55 @@
 // Admin JavaScript
 
+// Loading Indicator Functions
+function showLoading(button) {
+    if (!button) return;
+    button.disabled = true;
+    const originalText = button.innerHTML;
+    button.dataset.originalText = originalText;
+    button.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Loading...';
+}
+
+function hideLoading(button) {
+    if (!button) return;
+    button.disabled = false;
+    if (button.dataset.originalText) {
+        button.innerHTML = button.dataset.originalText;
+    }
+}
+
+// Add loading to all forms on page load
+document.addEventListener('DOMContentLoaded', function() {
+    // Admin forms
+    document.querySelectorAll('.admin-form').forEach(form => {
+        form.addEventListener('submit', function(e) {
+            const submitBtn = form.querySelector('button[type="submit"]');
+            if (submitBtn) {
+                showLoading(submitBtn);
+            }
+        });
+    });
+
+    // Delete buttons
+    document.querySelectorAll('form[action*="/delete"], form[onsubmit*="confirm"]').forEach(form => {
+        form.addEventListener('submit', function(e) {
+            const submitBtn = form.querySelector('button[type="submit"]');
+            if (submitBtn && !submitBtn.disabled) {
+                showLoading(submitBtn);
+            }
+        });
+    });
+
+    // Action buttons (approve, unapprove, verify, etc.)
+    document.querySelectorAll('form[action*="/approve"], form[action*="/unapprove"], form[action*="/verify"], form[action*="/unverify"]').forEach(form => {
+        form.addEventListener('submit', function(e) {
+            const submitBtn = form.querySelector('button[type="submit"]');
+            if (submitBtn) {
+                showLoading(submitBtn);
+            }
+        });
+    });
+});
+
 // Confirm delete actions
 document.querySelectorAll('form[onsubmit*="confirm"]').forEach(form => {
     form.addEventListener('submit', function(e) {

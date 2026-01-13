@@ -3,6 +3,7 @@ const Achievement = require('../models/Achievement');
 const Philanthropic = require('../models/Philanthropic');
 const GoodwillMessage = require('../models/GoodwillMessage');
 const Settings = require('../models/Settings');
+const Comment = require('../models/Comment');
 
 exports.getHome = async (req, res) => {
   try {
@@ -48,14 +49,44 @@ exports.getProfile = async (req, res) => {
 
 exports.getAchievements = async (req, res) => {
   try {
-    const [achievements, settings] = await Promise.all([
-      Achievement.find().sort({ date: -1 }),
-      Settings.getSettings()
-    ]);
+    const achievements = await Achievement.find().sort({ date: -1 });
+    const settings = await Settings.getSettings();
+    
+    // Get approved comments for each achievement
+    const achievementsWithComments = await Promise.all(
+      achievements.map(async (achievement) => {
+        const topLevelComments = await Comment.find({
+          parentType: 'Achievement',
+          parentId: achievement._id,
+          approved: true,
+          parentComment: null // Only top-level comments
+        }).sort({ createdAt: -1 });
+        
+        // Get replies for each comment
+        const commentsWithReplies = await Promise.all(
+          topLevelComments.map(async (comment) => {
+            const replies = await Comment.find({
+              parentComment: comment._id,
+              approved: true
+            }).sort({ createdAt: 1 });
+            
+            return {
+              ...comment.toObject(),
+              replies: replies || []
+            };
+          })
+        );
+        
+        return {
+          ...achievement.toObject(),
+          comments: commentsWithReplies || []
+        };
+      })
+    );
 
     res.render('public/achievements', {
       layout: 'layouts/main',
-      achievements: achievements || [],
+      achievements: achievementsWithComments || [],
       settings: settings || {}
     });
   } catch (error) {
@@ -66,14 +97,44 @@ exports.getAchievements = async (req, res) => {
 
 exports.getPhilanthropic = async (req, res) => {
   try {
-    const [philanthropic, settings] = await Promise.all([
-      Philanthropic.find().sort({ date: -1 }),
-      Settings.getSettings()
-    ]);
+    const philanthropic = await Philanthropic.find().sort({ date: -1 });
+    const settings = await Settings.getSettings();
+    
+    // Get approved comments for each philanthropic item
+    const philanthropicWithComments = await Promise.all(
+      philanthropic.map(async (item) => {
+        const topLevelComments = await Comment.find({
+          parentType: 'Philanthropic',
+          parentId: item._id,
+          approved: true,
+          parentComment: null // Only top-level comments
+        }).sort({ createdAt: -1 });
+        
+        // Get replies for each comment
+        const commentsWithReplies = await Promise.all(
+          topLevelComments.map(async (comment) => {
+            const replies = await Comment.find({
+              parentComment: comment._id,
+              approved: true
+            }).sort({ createdAt: 1 });
+            
+            return {
+              ...comment.toObject(),
+              replies: replies || []
+            };
+          })
+        );
+        
+        return {
+          ...item.toObject(),
+          comments: commentsWithReplies || []
+        };
+      })
+    );
 
     res.render('public/philanthropic', {
       layout: 'layouts/main',
-      philanthropic: philanthropic || [],
+      philanthropic: philanthropicWithComments || [],
       settings: settings || {}
     });
   } catch (error) {
@@ -118,6 +179,55 @@ exports.submitGoodwillMessage = async (req, res) => {
   } catch (error) {
     console.error(error);
     res.status(500).send('Server Error');
+  }
+};
+
+// Comment functions
+exports.submitComment = async (req, res) => {
+  try {
+    const { name, email, content, parentType, parentId, parentComment } = req.body;
+
+    if (!name || !email || !content || !parentType || !parentId) {
+      return res.redirect('back?error=Please fill in all required fields');
+    }
+
+    const commentData = {
+      content: content.trim(),
+      author: {
+        name: name.trim(),
+        email: email.toLowerCase().trim()
+      },
+      parentType: parentType,
+      parentId: parentId,
+      approved: false // Requires admin approval
+    };
+
+    if (req.file) {
+      commentData.author.image = req.file.path;
+    }
+
+    // If this is a reply to another comment
+    if (parentComment) {
+      commentData.parentComment = parentComment;
+    }
+
+    const comment = await Comment.create(commentData);
+
+    // If it's a reply, add it to the parent comment's replies array
+    if (parentComment) {
+      await Comment.findByIdAndUpdate(parentComment, {
+        $push: { replies: comment._id }
+      });
+    }
+
+    const redirectPath = parentType === 'Achievement' 
+      ? '/achievements?comment=submitted' 
+      : '/philanthropic?comment=submitted';
+    
+    res.redirect(redirectPath);
+  } catch (error) {
+    console.error('Error submitting comment:', error);
+    res.redirect('back?error=Failed to submit comment');
   }
 };
 

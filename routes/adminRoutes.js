@@ -41,5 +41,11 @@ router.post('/messages/:id/delete', isAuthenticated, adminController.deleteMessa
 router.get('/settings', isAuthenticated, adminController.getSettings);
 router.post('/settings', isAuthenticated, adminController.updateSettings);
 
+// Comments
+router.get('/comments', isAuthenticated, adminController.getComments);
+router.post('/comments/:id/approve', isAuthenticated, adminController.approveComment);
+router.post('/comments/:id/unapprove', isAuthenticated, adminController.unapproveComment);
+router.post('/comments/:id/delete', isAuthenticated, adminController.deleteComment);
+
 module.exports = router;
 

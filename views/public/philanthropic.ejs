@@ -32,6 +32,113 @@
                         <i class="fas fa-heart"></i>
                         <strong>Impact:</strong> <%= activity.impact %>
                     </div>
+                    
+                    <!-- Comments Section -->
+                    <div class="comments-section" data-philanthropic-id="<%= activity._id %>">
+                        <div class="comments-header">
+                            <h4><i class="fas fa-comments"></i> Comments (<%= activity.comments ? activity.comments.length : 0 %>)</h4>
+                            <button class="btn-toggle-comments" data-philanthropic-id="<%= activity._id %>" type="button">
+                                <i class="fas fa-plus"></i> Add Comment
+                            </button>
+                        </div>
+                        
+                        <!-- Comment Form -->
+                        <div class="comment-form-container" id="comment-form-philanthropic-<%= activity._id %>" style="display: none;">
+                            <form action="/comments" method="POST" enctype="multipart/form-data" class="comment-form">
+                                <input type="hidden" name="parentType" value="Philanthropic">
+                                <input type="hidden" name="parentId" value="<%= activity._id %>">
+                                <div class="form-group">
+                                    <input type="text" name="name" placeholder="Your Name *" required>
+                                </div>
+                                <div class="form-group">
+                                    <input type="email" name="email" placeholder="Your Email *" required>
+                                </div>
+                                <div class="form-group">
+                                    <textarea name="content" rows="3" placeholder="Your Comment *" required></textarea>
+                                </div>
+                                <div class="form-group">
+                                    <input type="file" name="image" accept="image/*" placeholder="Your Photo (Optional)">
+                                </div>
+                                <div class="form-actions">
+                                    <button type="submit" class="btn btn-primary btn-sm">Submit Comment</button>
+                                    <button type="button" class="btn btn-secondary btn-sm cancel-comment-btn" data-philanthropic-id="<%= activity._id %>">Cancel</button>
+                                </div>
+                            </form>
+                        </div>
+                        
+                        <!-- Comments List -->
+                        <div class="comments-list">
+                            <% if (activity.comments && activity.comments.length > 0) { %>
+                                <% activity.comments.forEach(comment => { %>
+                                    <div class="comment-item">
+                                        <div class="comment-header">
+                                            <div class="comment-avatar">
+                                                <img src="<%= comment.author.image || '/images/dummy-message.jpg' %>" alt="<%= comment.author.name %>">
+                                            </div>
+                                            <div class="comment-info">
+                                                <h5><%= comment.author.name %></h5>
+                                                <span class="comment-date"><%= new Date(comment.createdAt).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' }) %></span>
+                                            </div>
+                                        </div>
+                                        <div class="comment-content">
+                                            <p><%= comment.content %></p>
+                                        </div>
+                                        <div class="comment-actions">
+                                            <button class="btn-reply" data-comment-id="<%= comment._id %>" type="button">
+                                                <i class="fas fa-reply"></i> Reply
+                                            </button>
+                                        </div>
+                                        
+                                        <!-- Reply Form -->
+                                        <div class="reply-form-container" id="reply-form-philanthropic-<%= comment._id %>" style="display: none;">
+                                            <form action="/comments" method="POST" enctype="multipart/form-data" class="comment-form">
+                                                <input type="hidden" name="parentType" value="Philanthropic">
+                                                <input type="hidden" name="parentId" value="<%= activity._id %>">
+                                                <input type="hidden" name="parentComment" value="<%= comment._id %>">
+                                                <div class="form-group">
+                                                    <input type="text" name="name" placeholder="Your Name *" required>
+                                                </div>
+                                                <div class="form-group">
+                                                    <input type="email" name="email" placeholder="Your Email *" required>
+                                                </div>
+                                                <div class="form-group">
+                                                    <textarea name="content" rows="2" placeholder="Your Reply *" required></textarea>
+                                                </div>
+                                                <div class="form-actions">
+                                                    <button type="submit" class="btn btn-primary btn-sm">Submit Reply</button>
+                                                    <button type="button" class="btn btn-secondary btn-sm cancel-reply-btn" data-comment-id="<%= comment._id %>">Cancel</button>
+                                                </div>
+                                            </form>
+                                        </div>
+                                        
+                                        <!-- Replies -->
+                                        <% if (comment.replies && comment.replies.length > 0) { %>
+                                            <div class="replies-list">
+                                                <% comment.replies.forEach(reply => { %>
+                                                    <div class="reply-item">
+                                                        <div class="comment-header">
+                                                            <div class="comment-avatar">
+                                                                <img src="<%= reply.author.image || '/images/dummy-message.jpg' %>" alt="<%= reply.author.name %>">
+                                                            </div>
+                                                            <div class="comment-info">
+                                                                <h5><%= reply.author.name %></h5>
+                                                                <span class="comment-date"><%= new Date(reply.createdAt).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' }) %></span>
+                                                            </div>
+                                                        </div>
+                                                        <div class="comment-content">
+                                                            <p><%= reply.content %></p>
+                                                        </div>
+                                                    </div>
+                                                <% }); %>
+                                            </div>
+                                        <% } %>
+                                    </div>
+                                <% }); %>
+                            <% } else { %>
+                                <p class="no-comments">No comments yet. Be the first to comment!</p>
+                            <% } %>
+                        </div>
+                    </div>
                 </div>
             </div>
             <% }); %>
